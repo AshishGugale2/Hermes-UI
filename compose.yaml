@@ -1,0 +1,18 @@
+name: hermes-ui
+services:
+  ui:
+    build: .
+    ports:
+      - "${UI_BIND_ADDRESS:-127.0.0.1}:${UI_PORT:-3000}:8080"
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:8000}
+      MAIL_UPSTREAM: ${MAIL_UPSTREAM:-http://host.docker.internal:8080}
+      UI_API_BASE_URL: ${UI_API_BASE_URL:-/}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
